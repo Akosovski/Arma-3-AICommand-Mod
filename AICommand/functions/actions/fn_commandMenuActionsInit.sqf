@@ -24,26 +24,44 @@ AIC_fnc_addWaypointsActionHandler = {
 ["GROUP","Add Waypoints",[],AIC_fnc_addWaypointsActionHandler] call AIC_fnc_addCommandMenuAction;
 ["WAYPOINT","Add Waypoints",[],AIC_fnc_addWaypointsActionHandler] call AIC_fnc_addCommandMenuAction;
 
+AIC_fnc_joinGroupActionHandler = {
+	params ["_menuParams","_actionParams"];
+	_menuParams params ["_groupControlId"];
+	private ["_group"];
+	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
+	private ["_selectedGroup"];
+	_selectedGroup = [_groupControlId] call AIC_fnc_selectGroupControlGroup;
+	if(!isNull _selectedGroup) then {
+		(units _group) joinSilent _selectedGroup;
+		hint ("Selected Group Merged");
+	} else {
+		hint ("No Group Selected");
+	};
+};
+
+["GROUP","Merge Group",[],AIC_fnc_joinGroupActionHandler,[]] call AIC_fnc_addCommandMenuAction;
+
 AIC_fnc_splitGroupFirstNActionHandler = {
     params ["_menuParams", "_actionParams"];
     _menuParams params ["_groupControlId"];
-    private ["_group", "_numUnits", "_selectedUnits"];
+    private ["_group", "_numUnits", "_remainingUnits"];
     
     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
     _actionParams params ["_numUnits"];
     
-    _selectedUnits = (units _group) select [0, _numUnits];
-    
-    if ((count _selectedUnits) == 0) exitWith {
-        hint format ["Not enough units to split %1 units!", _numUnits];
+    private _allUnits = units _group;
+
+    if ((count _allUnits) <= _numUnits) exitWith {
+        hint ("Not enough units to seperate into a new group!");
     };
     
+    private _remainingUnits = _allUnits select [_numUnits, (count _allUnits) - _numUnits];
     private _group2 = createGroup (side _group);
     {
         [_x] joinSilent _group2;
-    } forEach _selectedUnits;
+    } forEach _remainingUnits;
 
-    hint format ["Moved %1 units to the new group.", count _selectedUnits];
+    hint format ["Seperated %1 units. %2 units remain", count _remainingUnits, _numUnits];
 };
 
 ["GROUP", "Take First 2 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [2], {
@@ -81,22 +99,25 @@ AIC_fnc_splitGroupFirstNActionHandler = {
     count units _group > 10;
 }] call AIC_fnc_addCommandMenuAction;
 
-AIC_fnc_joinGroupActionHandler = {
+AIC_fnc_setGroupFormationActionHandler = {
 	params ["_menuParams","_actionParams"];
 	_menuParams params ["_groupControlId"];
 	private ["_group"];
 	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	private ["_selectedGroup"];
-	_selectedGroup = [_groupControlId] call AIC_fnc_selectGroupControlGroup;
-	if(!isNull _selectedGroup) then {
-		(units _group) joinSilent _selectedGroup;
-		hint ("Selected Group Merged");
-	} else {
-		hint ("No Group Selected");
-	};
+	_actionParams params ["_mode"];
+	[_group,_mode] remoteExec ["setFormation", leader _group]; 
+	hint ("Formation set to " + toLower _mode);
 };
 
-["GROUP","Merge Group",[],AIC_fnc_joinGroupActionHandler,[]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Column",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["COLUMN"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Stag. Column",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["STAG COLUMN"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Wedge",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["WEDGE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Echelon Left",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["ECH LEFT"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Echelon Right",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["ECH RIGHT"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Vee",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["VEE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Line",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["LINE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","File",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["FILE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Diamond",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["DIAMOND"]] call AIC_fnc_addCommandMenuAction;
 
 AIC_fnc_setWaypointFormationActionHandler = {
 	params ["_menuParams","_actionParams"];
@@ -170,26 +191,6 @@ AIC_fnc_setGroupSpeedActionHandler = {
 ["GROUP","Half Speed",["Set Group Speed"],AIC_fnc_setGroupSpeedActionHandler,["LIMITED", "Half Speed"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Full Speed (In Formation)",["Set Group Speed"],AIC_fnc_setGroupSpeedActionHandler,["NORMAL", "Full Speed (In Formation)"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Full (No Formation)",["Set Group Speed"],AIC_fnc_setGroupSpeedActionHandler,["FULL", "Full (No Formation)"]] call AIC_fnc_addCommandMenuAction;	
-
-AIC_fnc_setGroupFormationActionHandler = {
-	params ["_menuParams","_actionParams"];
-	_menuParams params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	_actionParams params ["_mode"];
-	[_group,_mode] remoteExec ["setFormation", leader _group]; 
-	hint ("Formation set to " + toLower _mode);
-};
-
-["GROUP","Column",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["COLUMN"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Stag. Column",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["STAG COLUMN"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Wedge",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["WEDGE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Echelon Left",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["ECH LEFT"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Echelon Right",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["ECH RIGHT"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Vee",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["VEE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Line",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["LINE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","File",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["FILE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Diamond",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["DIAMOND"]] call AIC_fnc_addCommandMenuAction;
 
 AIC_fnc_commandMenuIsAir = {
 	params ["_menuParams","_actionParams"];
