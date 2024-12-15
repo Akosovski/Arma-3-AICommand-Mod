@@ -92,6 +92,13 @@ AIC_fnc_splitGroupFirstNActionHandler = {
     count units _group > 5;
 }] call AIC_fnc_addCommandMenuAction;
 
+["GROUP", "Take First 8 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [8], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 8;
+}] call AIC_fnc_addCommandMenuAction;
+
 ["GROUP", "Take First 10 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [10], {
     params ["_groupControlId"];
     private ["_group"];
