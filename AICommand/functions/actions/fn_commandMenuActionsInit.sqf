@@ -65,13 +65,6 @@ AIC_fnc_splitGroupHalfActionHandler = {
 	hint format ["Seperated %1 units. %2 units remain", _halfCount, count _unitsToMove];
 };
 
-["GROUP", "Take Half Units", ["Seperate Group"], AIC_fnc_splitGroupHalfActionHandler, [], {
-    params ["_groupControlId"];
-    private ["_group"];
-    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
-    count units _group > 1;
-}] call AIC_fnc_addCommandMenuAction;
-
 AIC_fnc_splitGroupFirstNActionHandler = {
     params ["_menuParams", "_actionParams"];
     _menuParams params ["_groupControlId"];
@@ -95,42 +88,56 @@ AIC_fnc_splitGroupFirstNActionHandler = {
     hint format ["Seperated %1 units. %2 units remain", count _remainingUnits, _numUnits];
 };
 
-["GROUP", "Take First 2 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [2], {
+["GROUP", "Leave Group", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [1], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 1;
+}] call AIC_fnc_addCommandMenuAction;
+
+["GROUP", "Seperate Units in Half", ["Seperate Group"], AIC_fnc_splitGroupHalfActionHandler, [], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 1;
+}] call AIC_fnc_addCommandMenuAction;
+
+["GROUP", "Seperate 2 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [2], {
     params ["_groupControlId"];
     private ["_group"];
     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
     count units _group > 2;
 }] call AIC_fnc_addCommandMenuAction;
 
-["GROUP", "Take First 3 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [3], {
+["GROUP", "Seperate 3 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [3], {
     params ["_groupControlId"];
     private ["_group"];
     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
     count units _group > 3;
 }] call AIC_fnc_addCommandMenuAction;
 
-["GROUP", "Take First 4 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [4], {
+["GROUP", "Seperate 4 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [4], {
     params ["_groupControlId"];
     private ["_group"];
     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
     count units _group > 4;
 }] call AIC_fnc_addCommandMenuAction;
 
-["GROUP", "Take First 5 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [5], {
+["GROUP", "Seperate 5 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [5], {
     params ["_groupControlId"];
     private ["_group"];
     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
     count units _group > 5;
 }] call AIC_fnc_addCommandMenuAction;
 
-["GROUP", "Take First 8 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [8], {
+["GROUP", "Seperate 8 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [8], {
     params ["_groupControlId"];
     private ["_group"];
     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
     count units _group > 8;
 }] call AIC_fnc_addCommandMenuAction;
 
-["GROUP", "Take First 10 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [10], {
+["GROUP", "Seperate 10 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [10], {
     params ["_groupControlId"];
     private ["_group"];
     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
