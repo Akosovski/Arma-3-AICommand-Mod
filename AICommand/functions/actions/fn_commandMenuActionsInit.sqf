@@ -24,6 +24,119 @@ AIC_fnc_addWaypointsActionHandler = {
 ["GROUP","Add Waypoints",[],AIC_fnc_addWaypointsActionHandler] call AIC_fnc_addCommandMenuAction;
 ["WAYPOINT","Add Waypoints",[],AIC_fnc_addWaypointsActionHandler] call AIC_fnc_addCommandMenuAction;
 
+AIC_fnc_splitGroupFirstNActionHandler = {
+    params ["_menuParams", "_actionParams"];
+    _menuParams params ["_groupControlId"];
+    private ["_group", "_numUnits", "_selectedUnits"];
+    
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    _actionParams params ["_numUnits"];
+    
+    _selectedUnits = (units _group) select [0, _numUnits];
+    
+    if ((count _selectedUnits) == 0) exitWith {
+        hint format ["Not enough units to split %1 units!", _numUnits];
+    };
+    
+    private _group2 = createGroup (side _group);
+    {
+        [_x] joinSilent _group2;
+    } forEach _selectedUnits;
+
+    hint format ["Moved %1 units to the new group.", count _selectedUnits];
+};
+
+["GROUP", "Take First 2 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [2], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 2;
+}] call AIC_fnc_addCommandMenuAction;
+
+["GROUP", "Take First 3 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [3], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 3;
+}] call AIC_fnc_addCommandMenuAction;
+
+["GROUP", "Take First 4 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [4], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 4;
+}] call AIC_fnc_addCommandMenuAction;
+
+["GROUP", "Take First 5 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [5], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 5;
+}] call AIC_fnc_addCommandMenuAction;
+
+["GROUP", "Take First 10 Units", ["Seperate Group"], AIC_fnc_splitGroupFirstNActionHandler, [10], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 10;
+}] call AIC_fnc_addCommandMenuAction;
+
+AIC_fnc_joinGroupActionHandler = {
+	params ["_menuParams","_actionParams"];
+	_menuParams params ["_groupControlId"];
+	private ["_group"];
+	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
+	private ["_selectedGroup"];
+	_selectedGroup = [_groupControlId] call AIC_fnc_selectGroupControlGroup;
+	if(!isNull _selectedGroup) then {
+		(units _group) joinSilent _selectedGroup;
+		hint ("Selected Group Merged");
+	} else {
+		hint ("No Group Selected");
+	};
+};
+
+["GROUP","Merge Group",[],AIC_fnc_joinGroupActionHandler,[]] call AIC_fnc_addCommandMenuAction;
+
+AIC_fnc_setWaypointFormationActionHandler = {
+	params ["_menuParams","_actionParams"];
+	_menuParams params ["_groupControlId","_waypointId"];
+	private ["_group","_waypoint"];
+	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
+	_waypoint = [_group, _waypointId] call AIC_fnc_getWaypoint;
+	_actionParams params ["_mode"];
+	_waypoint set [7,_mode];
+	[_group, _waypoint] call AIC_fnc_setWaypoint;
+	[_groupControlId,"REFRESH_WAYPOINTS",[]] call AIC_fnc_groupControlEventHandler;
+	hint ("Formation set to " + toLower _mode);
+};
+
+["WAYPOINT","Column",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["COLUMN"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","Stag. Column",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["STAG COLUMN"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","Wedge",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["WEDGE"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","Echelon Left",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["ECH LEFT"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","Echelon Right",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["ECH RIGHT"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","Vee",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["VEE"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","Line",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["LINE"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","File",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["FILE"]] call AIC_fnc_addCommandMenuAction;
+["WAYPOINT","Diamond",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["DIAMOND"]] call AIC_fnc_addCommandMenuAction;
+
+AIC_fnc_setGroupBehaviourActionHandler = {
+	params ["_menuParams","_actionParams"];
+	_menuParams params ["_groupControlId"];
+	private ["_group"];
+	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
+	_actionParams params ["_mode"];
+	[_group,_mode] remoteExec ["setBehaviour", leader _group]; 
+	hint ("Behaviour set to " + toLower _mode);
+};
+
+["GROUP","Careless",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["CARELESS"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Safe",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["SAFE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Aware",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["AWARE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Combat",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["COMBAT"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Stealth",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["STEALTH"]] call AIC_fnc_addCommandMenuAction;
+	
 AIC_fnc_setGroupColorActionHandler = {
 	params ["_menuParams","_actionParams"];
 	_menuParams params ["_groupControlId"];
@@ -44,126 +157,6 @@ AIC_fnc_setGroupColorActionHandler = {
 ["GROUP","Black",["Set Group Color"],AIC_fnc_setGroupColorActionHandler,[AIC_COLOR_BLACK]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","White",["Set Group Color"],AIC_fnc_setGroupColorActionHandler,[AIC_COLOR_WHITE]] call AIC_fnc_addCommandMenuAction;
 
-
-AIC_fnc_setGroupBehaviourActionHandler = {
-	params ["_menuParams","_actionParams"];
-	_menuParams params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	_actionParams params ["_mode"];
-	[_group,_mode] remoteExec ["setBehaviour", leader _group]; 
-	hint ("Behaviour set to " + toLower _mode);
-};
-
-["GROUP","Careless",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["CARELESS"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Safe",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["SAFE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Aware",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["AWARE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Combat",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["COMBAT"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Stealth",["Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["STEALTH"]] call AIC_fnc_addCommandMenuAction;
-
-AIC_fnc_joinGroupActionHandler = {
-	params ["_menuParams","_actionParams"];
-	_menuParams params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	private ["_selectedGroup"];
-	_selectedGroup = [_groupControlId] call AIC_fnc_selectGroupControlGroup;
-	if(!isNull _selectedGroup) then {
-		(units _group) joinSilent _selectedGroup;
-		hint ("Selected Group Joined");
-	} else {
-		hint ("No Group Selected");
-	};
-};
-
-["GROUP","Join A Group",["Group Size"],AIC_fnc_joinGroupActionHandler,[]] call AIC_fnc_addCommandMenuAction;
-
-AIC_fnc_splitGroupHalfActionHandler = {
-	params ["_menuParams","_actionParams"];
-	_menuParams params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	_group2 = createGroup (side _group);
-	_joinNewGroup = false;
-	{
-		if(_joinNewGroup) then {
-			[_x] joinSilent _group2;
-			_joinNewGroup = false;
-		} else {	
-			_joinNewGroup = true;
-		};
-	} forEach (units _group);
-	hint ("Group Split in Half");
-};
-
-["GROUP","In Half",["Group Size","Split Group"],AIC_fnc_splitGroupHalfActionHandler,[],{
-	params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	count units _group > 1;
-}] call AIC_fnc_addCommandMenuAction;
-
-// AIC_fnc_splitGroupSelectedActionHandler = {
-//     params ["_menuParams", "_actionParams"];
-//     _menuParams params ["_groupControlId"];
-//     private ["_group", "_selectedUnits"];
-//     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
-    
-//     _selectedUnits = selection player;
-//     if ((count _selectedUnits) == 0) exitWith {
-//         hint "No units selected!";
-//     };
-//     private _group2 = createGroup (side _group);
-//     {
-//         [_x] joinSilent _group2;
-//     } forEach _selectedUnits;
-
-//     hint format ["Moved %1 units to the new group.", count _selectedUnits];
-// };
-
-// ["GROUP", "Split Selected Units", ["Selected Units", "Split Group"], AIC_fnc_splitGroupSelectedActionHandler, [], {
-//     params ["_groupControlId"];
-//     private ["_group"];
-//     _group = AIC_fnc_getGroupControlGroup(_groupControlId);
-//     count units _group > 1;
-// }] call AIC_fnc_addCommandMenuAction;
-
-AIC_fnc_splitGroupUnitsActionHandler = {
-	params ["_menuParams","_actionParams"];
-	_menuParams params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	
-	// Find all command controls to update with new split groups
-	_commandControlsToUpdate = [];
-	_commandControls = AIC_fnc_getCommandControls();
-	{
-		_commandControlId = _x;
-		_groups = AIC_fnc_getCommandControlGroups(_commandControlId);
-		if(_group in _groups) then {
-			_commandControlsToUpdate pushBack _commandControlId;
-		};
-	} forEach _commandControls;
-	
-	{
-		_group = createGroup (side _x);
-		[_x] joinSilent _group;
-		{
-			[_x,_group] call AIC_fnc_commandControlAddGroup;
-		} forEach _commandControlsToUpdate;
-	} forEach (units _group);
-	
-	hint ("Group Split into Individual Units");
-	
-};
-
-["GROUP","Into Individual Units",["Group Size","Split Group"],AIC_fnc_splitGroupUnitsActionHandler,[],{
-	params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	count units _group > 1;
-}] call AIC_fnc_addCommandMenuAction;
-	
 AIC_fnc_setGroupSpeedActionHandler = {
 	params ["_menuParams","_actionParams"];
 	_menuParams params ["_groupControlId"];
@@ -193,7 +186,7 @@ AIC_fnc_setGroupFormationActionHandler = {
 ["GROUP","Wedge",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["WEDGE"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Echelon Left",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["ECH LEFT"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Echelon Right",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["ECH RIGHT"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","V",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["VEE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Vee",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["VEE"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Line",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["LINE"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","File",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["FILE"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Diamond",["Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["DIAMOND"]] call AIC_fnc_addCommandMenuAction;
@@ -245,10 +238,10 @@ AIC_fnc_setGroupCombatModeActionHandler = {
 };
 
 ["GROUP","Never fire",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["BLUE","Never fire"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Hold fire - defend only",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["GREEN","Hold fire - defend only"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Hold fire, engage at will",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["WHITE","Hold fire, engage at will"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Hold fire, Defend only",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["GREEN","Hold fire - defend only"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Hold fire, Engage at will",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["WHITE","Hold fire, engage at will"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Fire at will",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["YELLOW","Fire at will"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Fire at will, engage at will",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["RED","Fire at will, engage at will"]] call AIC_fnc_addCommandMenuAction;
+["GROUP","Fire at will, Engage at will",["Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["RED","Fire at will, engage at will"]] call AIC_fnc_addCommandMenuAction;
 		
 AIC_fnc_clearAllWaypointsActionHandler = {
 	params ["_menuParams","_actionParams"];
@@ -613,30 +606,7 @@ AIC_fnc_deleteWaypointHandler = {
 };
 
 ["WAYPOINT","Delete Waypoint",[],AIC_fnc_deleteWaypointHandler] call AIC_fnc_addCommandMenuAction;
-
-AIC_fnc_setWaypointFormationActionHandler = {
-	params ["_menuParams","_actionParams"];
-	_menuParams params ["_groupControlId","_waypointId"];
-	private ["_group","_waypoint"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	_waypoint = [_group, _waypointId] call AIC_fnc_getWaypoint;
-	_actionParams params ["_mode"];
-	_waypoint set [7,_mode];
-	[_group, _waypoint] call AIC_fnc_setWaypoint;
-	[_groupControlId,"REFRESH_WAYPOINTS",[]] call AIC_fnc_groupControlEventHandler;
-	hint ("Formation set to " + toLower _mode);
-};
-
-["WAYPOINT","Column",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["COLUMN"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","Stag. Column",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["STAG COLUMN"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","Wedge",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["WEDGE"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","Echelon Left",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["ECH LEFT"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","Echelon Right",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["ECH RIGHT"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","V",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["VEE"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","Line",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["LINE"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","File",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["FILE"]] call AIC_fnc_addCommandMenuAction;
-["WAYPOINT","Diamond",["Set Group Formation"],AIC_fnc_setWaypointFormationActionHandler,["DIAMOND"]] call AIC_fnc_addCommandMenuAction;
-								
+							
 AIC_fnc_setWaypointTypeActionHandler = {
 	params ["_menuParams","_actionParams"];
 	_menuParams params ["_groupControlId","_waypointId"];
