@@ -41,6 +41,37 @@ AIC_fnc_joinGroupActionHandler = {
 
 ["GROUP","Merge Group",[],AIC_fnc_joinGroupActionHandler,[]] call AIC_fnc_addCommandMenuAction;
 
+AIC_fnc_splitGroupHalfActionHandler = {
+    params ["_menuParams", "_actionParams"];
+    _menuParams params ["_groupControlId"];
+    private ["_group", "_allUnits", "_halfCount", "_unitsToMove"];
+
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    _allUnits = units _group;
+
+    _halfCount = ceil((count _allUnits) / 2);
+
+    _unitsToMove = _allUnits select [_halfCount, (count _allUnits) - _halfCount];
+
+    if ((count _unitsToMove) == 0) exitWith {
+        hint "Not enough units to seperate!";
+    };
+
+    private _group2 = createGroup (side _group);
+    {
+        [_x] joinSilent _group2;
+    } forEach _unitsToMove;
+
+	hint format ["Seperated %1 units. %2 units remain", _halfCount, count _unitsToMove];
+};
+
+["GROUP", "Take Half Units", ["Seperate Group"], AIC_fnc_splitGroupHalfActionHandler, [], {
+    params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    count units _group > 1;
+}] call AIC_fnc_addCommandMenuAction;
+
 AIC_fnc_splitGroupFirstNActionHandler = {
     params ["_menuParams", "_actionParams"];
     _menuParams params ["_groupControlId"];
