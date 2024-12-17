@@ -5,14 +5,35 @@ _colorBlue = [0,0,1];
 _colorGreen = [0,1,0];
 _colorRed = [1,0,0];
 _colorWhite = [1,1,1];
+_colorYellow = [1,1,0];
+_colorCyan = [0,1,1];
+_colorMagenta = [1,0,1];
+_colorOrange = [1,0.5,0];
+_colorPurple = [0.5,0,0.5];
 
 AIC_COLOR_RED = ["RED",_colorRed];
 AIC_COLOR_GREEN = ["GREEN",_colorGreen];
 AIC_COLOR_BLUE = ["BLUE",_colorBlue];
 AIC_COLOR_BLACK = ["BLACK",_colorBlack];
 AIC_COLOR_WHITE = ["WHITE",_colorWhite];
+AIC_COLOR_YELLOW = ["YELLOW",_colorYellow];
+AIC_COLOR_CYAN = ["CYAN",_colorCyan];
+AIC_COLOR_MAGENTA = ["MAGENTA",_colorMagenta];
+AIC_COLOR_ORANGE = ["ORANGE",_colorOrange];
+AIC_COLOR_PURPLE = ["PURPLE",_colorPurple];
 
-_colors = [AIC_COLOR_RED,AIC_COLOR_GREEN,AIC_COLOR_BLUE,AIC_COLOR_BLACK,AIC_COLOR_WHITE];
+_colors = [
+    AIC_COLOR_RED,
+    AIC_COLOR_GREEN,
+    AIC_COLOR_BLUE,
+    AIC_COLOR_BLACK,
+    AIC_COLOR_WHITE,
+    AIC_COLOR_YELLOW,
+    AIC_COLOR_CYAN,
+    AIC_COLOR_MAGENTA,
+    AIC_COLOR_ORANGE,
+    AIC_COLOR_PURPLE
+];
 _groupIconTypes = ["inf","air","motor_inf","mech_inf","armor","plane","uav","art","mortar","maint","med","support","boat"];
 
 _wpIconTypes = ["MOVE"];
