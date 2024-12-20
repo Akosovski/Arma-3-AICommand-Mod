@@ -165,16 +165,6 @@ AIC_fnc_splitGroupFirstNActionHandler = {
     count units _group > 10;
 }] call AIC_fnc_addCommandMenuAction;
 
-AIC_fnc_setGroupFormationActionHandler = {
-	params ["_menuParams","_actionParams"];
-	_menuParams params ["_groupControlId"];
-	private ["_group"];
-	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
-	_actionParams params ["_mode"];
-	[_group,_mode] remoteExec ["setFormation", leader _group]; 
-	hint ("Formation set to " + toLower _mode);
-};
-
 AIC_fnc_setGroupStayInPlaceActionHandler = {
     params ["_menuParams", "_actionParams"];
     _menuParams params ["_groupControlId"];
@@ -193,6 +183,16 @@ AIC_fnc_setGroupStayInPlaceActionHandler = {
 
 ["GROUP", "Set to Hold Position", ["Adjust Group"], AIC_fnc_setGroupStayInPlaceActionHandler, ["On"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP", "Set to Start Moving", ["Adjust Group"], AIC_fnc_setGroupStayInPlaceActionHandler, ["Off"]] call AIC_fnc_addCommandMenuAction;
+
+AIC_fnc_setGroupFormationActionHandler = {
+	params ["_menuParams","_actionParams"];
+	_menuParams params ["_groupControlId"];
+	private ["_group"];
+	_group = AIC_fnc_getGroupControlGroup(_groupControlId);
+	_actionParams params ["_mode"];
+	[_group,_mode] remoteExec ["setFormation", leader _group]; 
+	hint ("Formation set to " + toLower _mode);
+};
 
 ["GROUP","Column",["Adjust Group", "Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["COLUMN"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Stag. Column",["Adjust Group", "Set Group Formation"],AIC_fnc_setGroupFormationActionHandler,["STAG COLUMN"]] call AIC_fnc_addCommandMenuAction;
@@ -333,6 +333,20 @@ AIC_fnc_setGroupCombatModeActionHandler = {
 ["GROUP","Hold fire, Engage at will",["Adjust Group", "Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["WHITE","Hold fire, engage at will"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Fire at will",["Adjust Group", "Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["YELLOW","Fire at will"]] call AIC_fnc_addCommandMenuAction;
 ["GROUP","Fire at will, Engage at will",["Adjust Group", "Set Group Combat Mode"],AIC_fnc_setGroupCombatModeActionHandler,["RED","Fire at will, engage at will"]] call AIC_fnc_addCommandMenuAction;
+
+AIC_fnc_killGroupActionHandler = {
+    params ["_menuParams","_actionParams"];
+    _menuParams params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    {
+        _x setDamage 1;
+    } forEach units _group;
+    
+    hint "Group Terminated";
+};
+
+["GROUP","Terminate Group",["Adjust Group"],AIC_fnc_killGroupActionHandler,[]] call AIC_fnc_addCommandMenuAction;
 
 AIC_fnc_clearAllWaypointsActionHandler = {
 	params ["_menuParams","_actionParams"];
