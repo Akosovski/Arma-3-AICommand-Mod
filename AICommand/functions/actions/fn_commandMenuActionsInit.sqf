@@ -237,11 +237,52 @@ AIC_fnc_setGroupBehaviourActionHandler = {
 	hint ("Behaviour set to " + toLower _mode);
 };
 
-["GROUP","Careless",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["CARELESS"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Safe",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["SAFE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Aware",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["AWARE"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Combat",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["COMBAT"]] call AIC_fnc_addCommandMenuAction;
-["GROUP","Stealth",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["STEALTH"]] call AIC_fnc_addCommandMenuAction;
+AIC_fnc_setGroupSitActionHandler = {
+    params ["_menuParams", "_actionParams"];
+    _menuParams params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    _actionParams params ["_mode"];
+    
+    if (_mode == "Sit") then {
+        {
+            _x disableAI "MOVE";
+            _x disableAI "ANIM";
+            _x action ["SitDown", _x];
+        } forEach (units _group);
+        hint "Group is sitting down";
+    } else {
+        {
+            _x enableAI "MOVE";
+            _x enableAI "ANIM";
+            _x playActionNow "STAND";
+        } forEach (units _group);
+        hint "Group is standing up";
+    };
+};
+
+AIC_fnc_setGroupSaluteActionHandler = {
+    params ["_menuParams", "_actionParams"];
+    _menuParams params ["_groupControlId"];
+    private ["_group"];
+    _group = AIC_fnc_getGroupControlGroup(_groupControlId);
+    _actionParams params ["_mode"];
+    
+    if (_mode == "Salute") then {
+        { _x playAction "SALUTE"; } forEach (units _group);
+    } else {
+        { _x playActionNow "STAND"; } forEach (units _group);
+    };
+};
+
+["GROUP", "Sit Down", ["Adjust Group", "Set Group Behaviour"], AIC_fnc_setGroupSitActionHandler, ["Sit"]] call AIC_fnc_addCommandMenuAction;
+["GROUP", "Stand Up", ["Adjust Group", "Set Group Behaviour"], AIC_fnc_setGroupSitActionHandler, ["Stand"]] call AIC_fnc_addCommandMenuAction;
+["GROUP", "Salute", ["Adjust Group", "Set Group Behaviour"], AIC_fnc_setGroupSaluteActionHandler, ["Salute"]] call AIC_fnc_addCommandMenuAction;
+["GROUP", "Careless",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["CARELESS"]] call AIC_fnc_addCommandMenuAction;
+["GROUP", "Safe",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["SAFE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP", "Aware",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["AWARE"]] call AIC_fnc_addCommandMenuAction;
+["GROUP", "Combat",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["COMBAT"]] call AIC_fnc_addCommandMenuAction;
+["GROUP", "Stealth",["Adjust Group", "Set Group Behaviour"],AIC_fnc_setGroupBehaviourActionHandler,["STEALTH"]] call AIC_fnc_addCommandMenuAction;
 	
 AIC_fnc_setGroupColorActionHandler = {
 	params ["_menuParams","_actionParams"];
